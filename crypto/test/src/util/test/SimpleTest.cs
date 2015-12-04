@@ -115,13 +115,25 @@ namespace Org.BouncyCastle.Utilities.Test
 		private static string GetFullName(
 			string name)
 		{
+#if SEPARATE_UNIT_TESTS
 			return "UnitTests.data." + name;
+#elif PORTABLE
+			return "crypto.tests." + name;
+#else
+            return "crypto.test.data." + name;
+#endif
 		}
 
 		private static string GetShortName(
 			string fullName)
 		{
+#if SEPARATE_UNIT_TESTS
 			return fullName.Substring("UnitTests.data.".Length);
+#elif PORTABLE
+			return fullName.Substring("crypto.tests.".Length);
+#else
+            return fullName.Substring("crypto.test.data.".Length);
+#endif
 		}
 
 #if NETCF_1_0 || NETCF_2_0
@@ -150,5 +162,23 @@ namespace Org.BouncyCastle.Utilities.Test
 		internal static readonly string NewLine = GetNewLine();
 
 		public abstract void PerformTest();
+
+        public static DateTime MakeUtcDateTime(int year, int month, int day, int hour, int minute, int second)
+        {
+#if PORTABLE
+            return new DateTime(year, month, day, hour, minute, second, DateTimeKind.Utc);
+#else
+            return new DateTime(year, month, day, hour, minute, second);
+#endif
+        }
+
+        public static DateTime MakeUtcDateTime(int year, int month, int day, int hour, int minute, int second, int millisecond)
+        {
+#if PORTABLE
+            return new DateTime(year, month, day, hour, minute, second, millisecond, DateTimeKind.Utc);
+#else
+            return new DateTime(year, month, day, hour, minute, second, millisecond);
+#endif
+        }
     }
 }

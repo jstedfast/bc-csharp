@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1.X509
 {
     public class Time
@@ -34,7 +36,11 @@ namespace Org.BouncyCastle.Asn1.X509
         public Time(
             DateTime date)
         {
+#if PORTABLE
+            string d = date.ToUniversalTime().ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) + "Z";
+#else
             string d = date.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture) + "Z";
+#endif
 
             int year = int.Parse(d.Substring(0, 4));
 
@@ -58,7 +64,7 @@ namespace Org.BouncyCastle.Asn1.X509
             if (obj is DerGeneralizedTime)
                 return new Time((DerGeneralizedTime)obj);
 
-            throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
+            throw new ArgumentException("unknown object in factory: " + Platform.GetTypeName(obj), "obj");
         }
 
         public string GetTime()

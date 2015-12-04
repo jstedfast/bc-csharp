@@ -5,11 +5,11 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Operators;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.Utilities;
-using Org.BouncyCastle.Crypto.Operators;
 
 namespace Org.BouncyCastle.X509
 {
@@ -147,15 +147,20 @@ namespace Org.BouncyCastle.X509
 				throw new CertificateNotYetValidException("certificate not valid until " + NotBefore);
 		}
 
+        public virtual AlgorithmIdentifier SignatureAlgorithm
+        {
+            get { return cert.SignatureAlgorithm; }
+        }
+
 		public virtual byte[] GetSignature()
 		{
-			return cert.SignatureValue.GetBytes();
+            return cert.GetSignatureOctets();
 		}
 
         public virtual void Verify(
             AsymmetricKeyParameter key)
         {
-            CheckSignature(new Asn1SignatureVerifier(cert.SignatureAlgorithm, key));
+            CheckSignature(new Asn1VerifierFactory(cert.SignatureAlgorithm, key));
         }
 
         /// <summary>
@@ -165,13 +170,13 @@ namespace Org.BouncyCastle.X509
         /// <returns>True if the signature is valid.</returns>
         /// <exception cref="Exception">If verifier provider is not appropriate or the certificate algorithm is invalid.</exception>
         public virtual void Verify(
-            ISignatureVerifierProvider verifierProvider)
+            IVerifierFactoryProvider verifierProvider)
         {
-            CheckSignature(verifierProvider.CreateSignatureVerifier(cert.SignatureAlgorithm));
+            CheckSignature(verifierProvider.CreateVerifierFactory(cert.SignatureAlgorithm));
         }
 
         protected virtual void CheckSignature(
-            ISignatureVerifier verifier)
+            IVerifierFactory verifier)
         {
             if (!cert.SignatureAlgorithm.Equals(cert.ACInfo.Signature))
 			{
@@ -186,7 +191,7 @@ namespace Org.BouncyCastle.X509
 
                 streamCalculator.Stream.Write(b, 0, b.Length);
 
-                streamCalculator.Stream.Close();
+                Platform.Dispose(streamCalculator.Stream);
             }
 			catch (IOException e)
 			{

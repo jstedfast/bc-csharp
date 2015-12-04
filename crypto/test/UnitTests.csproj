@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -16,7 +16,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG;SEPARATE_UNIT_TESTS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -142,6 +142,13 @@
     <Compile Include="src\crypto\agreement\test\JPakeParticipantTest.cs" />
     <Compile Include="src\crypto\agreement\test\JPakePrimeOrderGroupTest.cs" />
     <Compile Include="src\crypto\agreement\test\JPakeUtilitiesTest.cs" />
+    <Compile Include="src\crypto\prng\test\CtrDrbgTest.cs" />
+    <Compile Include="src\crypto\prng\test\DrbgTestVector.cs" />
+    <Compile Include="src\crypto\prng\test\HashDrbgTest.cs" />
+    <Compile Include="src\crypto\prng\test\HMacDrbgTest.cs" />
+    <Compile Include="src\crypto\prng\test\TestEntropySourceProvider.cs" />
+    <Compile Include="src\crypto\prng\test\X931Test.cs" />
+    <Compile Include="src\crypto\prng\test\X931TestVector.cs" />
     <Compile Include="src\crypto\test\AeadTestUtilities.cs" />
     <Compile Include="src\crypto\test\AESFastTest.cs" />
     <Compile Include="src\crypto\test\AESLightTest.cs" />
@@ -201,6 +208,7 @@
     <Compile Include="src\crypto\test\ModeTest.cs" />
     <Compile Include="src\crypto\test\NaccacheSternTest.cs" />
     <Compile Include="src\crypto\test\NoekeonTest.cs" />
+    <Compile Include="src\crypto\test\NonMemoableDigestTest.cs" />
     <Compile Include="src\crypto\test\NullTest.cs" />
     <Compile Include="src\crypto\test\OAEPTest.cs" />
     <Compile Include="src\crypto\test\OCBTest.cs" />
@@ -257,6 +265,7 @@
     <Compile Include="src\crypto\test\StreamCipherVectorTest.cs" />
     <Compile Include="src\crypto\test\TEATest.cs" />
     <Compile Include="src\crypto\test\TigerDigestTest.cs" />
+    <Compile Include="src\crypto\test\TnepresTest.cs" />
     <Compile Include="src\crypto\test\TwofishTest.cs" />
     <Compile Include="src\crypto\test\VMPCKSA3Test.cs" />
     <Compile Include="src\crypto\test\VMPCMacTest.cs" />
@@ -303,6 +312,7 @@
     <Compile Include="src\math\ec\test\TnafTest.cs" />
     <Compile Include="src\math\test\AllTests.cs" />
     <Compile Include="src\math\test\BigIntegerTest.cs" />
+    <Compile Include="src\math\test\PrimesTest.cs" />
     <Compile Include="src\ocsp\test\AllTests.cs" />
     <Compile Include="src\ocsp\test\OCSPTest.cs" />
     <Compile Include="src\ocsp\test\OCSPTestUtil.cs" />
@@ -1262,7 +1272,6 @@
     <EmbeddedResource Include="data\tls\keystores\server_store.rsa" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="data\" />
-    <Folder Include="src\" />
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
 </Project>

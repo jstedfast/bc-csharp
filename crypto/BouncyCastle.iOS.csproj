@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -50,6 +50,7 @@
     <Compile Include="bzip2\src\CBZip2InputStream.cs" />
     <Compile Include="bzip2\src\CBZip2OutputStream.cs" />
     <Compile Include="bzip2\src\CRC.cs" />
+    <Compile Include="src\asn1\BERBitString.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
     <Compile Include="src\asn1\ASN1Generator.cs" />
     <Compile Include="src\asn1\ASN1OctetStringParser.cs" />
@@ -626,6 +627,9 @@
     <Compile Include="src\crypto\CipherKeyGenerator.cs" />
     <Compile Include="src\crypto\CryptoException.cs" />
     <Compile Include="src\crypto\DataLengthException.cs" />
+    <Compile Include="src\crypto\digests\NonMemoableDigest.cs" />
+    <Compile Include="src\crypto\engines\SerpentEngineBase.cs" />
+    <Compile Include="src\crypto\engines\TnepresEngine.cs" />
     <Compile Include="src\crypto\IAsymmetricBlockCipher.cs" />
     <Compile Include="src\crypto\IAsymmetricCipherKeyPairGenerator.cs" />
     <Compile Include="src\crypto\IBasicAgreement.cs" />
@@ -637,15 +641,17 @@
     <Compile Include="src\crypto\IDerivationFunction.cs" />
     <Compile Include="src\crypto\IDerivationParameters.cs" />
     <Compile Include="src\crypto\IDigest.cs" />
+    <Compile Include="src\crypto\IEntropySource.cs" />
+    <Compile Include="src\crypto\IEntropySourceProvider.cs" />
     <Compile Include="src\crypto\IMac.cs" />
-    <Compile Include="src\crypto\ISignatureCalculator.cs" />
-    <Compile Include="src\crypto\ISignatureVerifier.cs" />
-    <Compile Include="src\crypto\ISignatureVerifierProvider.cs" />
+    <Compile Include="src\crypto\ISignatureFactory.cs" />
     <Compile Include="src\crypto\IStreamCalculator.cs" />
     <Compile Include="src\crypto\ISigner.cs" />
     <Compile Include="src\crypto\ISignerWithRecovery.cs" />
     <Compile Include="src\crypto\IStreamCipher.cs" />
     <Compile Include="src\crypto\IVerifier.cs" />
+    <Compile Include="src\crypto\IVerifierFactory.cs" />
+    <Compile Include="src\crypto\IVerifierFactoryProvider.cs" />
     <Compile Include="src\crypto\IWrapper.cs" />
     <Compile Include="src\crypto\IXof.cs" />
     <Compile Include="src\crypto\InvalidCipherTextException.cs" />
@@ -653,6 +659,20 @@
     <Compile Include="src\crypto\MaxBytesExceededException.cs" />
     <Compile Include="src\crypto\OutputLengthException.cs" />
     <Compile Include="src\crypto\PbeParametersGenerator.cs" />
+    <Compile Include="src\crypto\prng\BasicEntropySourceProvider.cs" />
+    <Compile Include="src\crypto\prng\CryptoApiEntropySourceProvider.cs" />
+    <Compile Include="src\crypto\prng\drbg\CtrSP800Drbg.cs" />
+    <Compile Include="src\crypto\prng\drbg\DrbgUtilities.cs" />
+    <Compile Include="src\crypto\prng\drbg\HashSP800Drbg.cs" />
+    <Compile Include="src\crypto\prng\drbg\HMacSP800Drbg.cs" />
+    <Compile Include="src\crypto\prng\drbg\ISP80090Drbg.cs" />
+    <Compile Include="src\crypto\prng\EntropyUtilities.cs" />
+    <Compile Include="src\crypto\prng\IDrbgProvider.cs" />
+    <Compile Include="src\crypto\prng\SP800SecureRandom.cs" />
+    <Compile Include="src\crypto\prng\SP800SecureRandomBuilder.cs" />
+    <Compile Include="src\crypto\prng\X931Rng.cs" />
+    <Compile Include="src\crypto\prng\X931SecureRandom.cs" />
+    <Compile Include="src\crypto\prng\X931SecureRandomBuilder.cs" />
     <Compile Include="src\crypto\StreamBlockCipher.cs" />
     <Compile Include="src\crypto\agreement\DHAgreement.cs" />
     <Compile Include="src\crypto\agreement\DHBasicAgreement.cs" />

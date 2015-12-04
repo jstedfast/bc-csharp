@@ -459,7 +459,7 @@ namespace Org.BouncyCastle.Cms
 			// NB: Would need to call FixAlgID on the DigestAlgorithmID
 
 			// For precalculated signers, just need to register the algorithm, not configure a digest
-			RegisterDigestOid(si.DigestAlgorithmID.ObjectID.Id);
+            RegisterDigestOid(si.DigestAlgorithmID.Algorithm.Id);
 		}
 
 		/**
@@ -636,7 +636,7 @@ namespace Org.BouncyCastle.Cms
 			{
 				content.Write(signedOut);
 			}
-			signedOut.Close();
+            Platform.Dispose(signedOut);
 		}
 
 		// RFC3852, section 5.1:
@@ -809,11 +809,28 @@ namespace Org.BouncyCastle.Cms
                 _out.Write(bytes, off, len);
             }
 
+#if PORTABLE
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    DoClose();
+                }
+                base.Dispose(disposing);
+            }
+#else
 			public override void Close()
             {
-                _out.Close();
+                DoClose();
+				base.Close();
+			}
+#endif
 
-				// TODO Parent context(s) should really be be closed explicitly
+            private void DoClose()
+            {
+                Platform.Dispose(_out);
+
+                // TODO Parent context(s) should really be be closed explicitly
 
                 _eiGen.Close();
 
@@ -898,8 +915,7 @@ namespace Org.BouncyCastle.Cms
 
 				_sigGen.Close();
                 _sGen.Close();
-				base.Close();
-			}
+            }
 
 			private static void WriteToGenerator(
 				Asn1Generator	ag,

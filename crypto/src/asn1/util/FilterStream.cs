@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1.Utilities
 {
     [Obsolete("Use Org.BouncyCastle.Utilities.IO.FilterStream")]
@@ -32,10 +34,22 @@ namespace Org.BouncyCastle.Asn1.Utilities
             get { return s.Position; }
             set { s.Position = value; }
         }
+#if PORTABLE
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Platform.Dispose(s);
+            }
+            base.Dispose(disposing);
+        }
+#else
         public override void Close()
         {
-            s.Close();
+            Platform.Dispose(s);
+            base.Close();
         }
+#endif
         public override void Flush()
         {
             s.Flush();

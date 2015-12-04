@@ -33,10 +33,6 @@ namespace Org.BouncyCastle.Crypto.Tls
             get { return true; }
         }
 
-        public override void Close()
-        {
-        }
-
         public override void Flush()
         {
         }

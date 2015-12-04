@@ -237,16 +237,16 @@ namespace Org.BouncyCastle.X509
 		/// <returns>A byte array containg the signature of the certificate.</returns>
 		public virtual byte[] GetSignature()
 		{
-			return c.Signature.GetBytes();
+			return c.GetSignatureOctets();
 		}
 
-		/// <summary>
+        /// <summary>
 		/// A meaningful version of the Signature Algorithm. (EG SHA1WITHRSA)
 		/// </summary>
 		/// <returns>A sting representing the signature algorithm.</returns>
 		public virtual string SigAlgName
 		{
-			get { return SignerUtilities.GetEncodingName(c.SignatureAlgorithm.ObjectID); }
+            get { return SignerUtilities.GetEncodingName(c.SignatureAlgorithm.Algorithm); }
 		}
 
 		/// <summary>
@@ -255,7 +255,7 @@ namespace Org.BouncyCastle.X509
 		/// <returns>A string containg a '.' separated object id.</returns>
 		public virtual string SigAlgOid
 		{
-			get { return c.SignatureAlgorithm.ObjectID.Id; }
+            get { return c.SignatureAlgorithm.Algorithm.Id; }
 		}
 
 		/// <summary>
@@ -547,7 +547,7 @@ namespace Org.BouncyCastle.X509
 		public virtual void Verify(
 			AsymmetricKeyParameter key)
 		{
-			CheckSignature(new Asn1SignatureVerifier(c.SignatureAlgorithm, key));
+			CheckSignature(new Asn1VerifierFactory(c.SignatureAlgorithm, key));
 		}
 
         /// <summary>
@@ -557,13 +557,13 @@ namespace Org.BouncyCastle.X509
         /// <returns>True if the signature is valid.</returns>
         /// <exception cref="Exception">If verifier provider is not appropriate or the certificate algorithm is invalid.</exception>
         public virtual void Verify(
-            ISignatureVerifierProvider verifierProvider)
+            IVerifierFactoryProvider verifierProvider)
         {
-            CheckSignature(verifierProvider.CreateSignatureVerifier (c.SignatureAlgorithm));
+            CheckSignature(verifierProvider.CreateVerifierFactory (c.SignatureAlgorithm));
         }
 
         protected virtual void CheckSignature(
-			ISignatureVerifier verifier)
+			IVerifierFactory verifier)
 		{
 			if (!IsAlgIDEqual(c.SignatureAlgorithm, c.TbsCertificate.Signature))
 				throw new CertificateException("signature algorithm in TBS cert not same as outer cert");
@@ -576,7 +576,7 @@ namespace Org.BouncyCastle.X509
 
 			streamCalculator.Stream.Write(b, 0, b.Length);
 
-            streamCalculator.Stream.Close();
+            Platform.Dispose(streamCalculator.Stream);
 
             if (!((IVerifier)streamCalculator.GetResult()).IsVerified(this.GetSignature()))
 			{
@@ -586,7 +586,7 @@ namespace Org.BouncyCastle.X509
 
 		private static bool IsAlgIDEqual(AlgorithmIdentifier id1, AlgorithmIdentifier id2)
 		{
-			if (!id1.ObjectID.Equals(id2.ObjectID))
+            if (!id1.Algorithm.Equals(id2.Algorithm))
 				return false;
 
 			Asn1Encodable p1 = id1.Parameters;

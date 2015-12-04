@@ -170,13 +170,13 @@ namespace Org.BouncyCastle.Crypto.Operators
 
             if (parameters != null && !derNull.Equals(parameters))
             {
-                if (sigAlgId.ObjectID.Equals(PkcsObjectIdentifiers.IdRsassaPss))
+                if (sigAlgId.Algorithm.Equals(PkcsObjectIdentifiers.IdRsassaPss))
                 {
                     RsassaPssParameters rsaParams = RsassaPssParameters.GetInstance(parameters);
 
-                    return GetDigestAlgName(rsaParams.HashAlgorithm.ObjectID) + "withRSAandMGF1";
+                    return GetDigestAlgName(rsaParams.HashAlgorithm.Algorithm) + "withRSAandMGF1";
                 }
-                if (sigAlgId.ObjectID.Equals(X9ObjectIdentifiers.ECDsaWithSha2))
+                if (sigAlgId.Algorithm.Equals(X9ObjectIdentifiers.ECDsaWithSha2))
                 {
                     Asn1Sequence ecDsaParams = Asn1Sequence.GetInstance(parameters);
 
@@ -184,7 +184,7 @@ namespace Org.BouncyCastle.Crypto.Operators
                 }
             }
 
-            return sigAlgId.ObjectID.Id;
+            return sigAlgId.Algorithm.Id;
         }
 
         private static RsassaPssParameters CreatePssParams(
@@ -303,11 +303,7 @@ namespace Org.BouncyCastle.Crypto.Operators
 			set { throw new NotImplementedException (); }
 		}
 
-		public override void Close()
-		{
-		}
-
-		public override  void Flush()
+        public override void Flush()
 		{
 		}
 
@@ -326,10 +322,10 @@ namespace Org.BouncyCastle.Crypto.Operators
 	}
 
     /// <summary>
-    /// Calculator class for signature generation in ASN.1 based profiles that use an AlgorithmIdentifier to preserve
+    /// Calculator factory class for signature generation in ASN.1 based profiles that use an AlgorithmIdentifier to preserve
     /// signature algorithm details.
     /// </summary>
-	public class Asn1SignatureCalculator: ISignatureCalculator
+	public class Asn1SignatureFactory: ISignatureFactory
 	{
 		private readonly AlgorithmIdentifier algID;
         private readonly string algorithm;
@@ -341,7 +337,7 @@ namespace Org.BouncyCastle.Crypto.Operators
         /// </summary>
         /// <param name="algorithm">The name of the signature algorithm to use.</param>
         /// <param name="privateKey">The private key to be used in the signing operation.</param>
-		public Asn1SignatureCalculator (string algorithm, AsymmetricKeyParameter privateKey): this(algorithm, privateKey, null)
+		public Asn1SignatureFactory (string algorithm, AsymmetricKeyParameter privateKey): this(algorithm, privateKey, null)
 		{
 		}
 
@@ -351,7 +347,7 @@ namespace Org.BouncyCastle.Crypto.Operators
         /// <param name="algorithm">The name of the signature algorithm to use.</param>
         /// <param name="privateKey">The private key to be used in the signing operation.</param>
         /// <param name="random">The source of randomness to be used in signature calculation.</param>
-		public Asn1SignatureCalculator (string algorithm, AsymmetricKeyParameter privateKey, SecureRandom random)
+		public Asn1SignatureFactory (string algorithm, AsymmetricKeyParameter privateKey, SecureRandom random)
 		{
 			DerObjectIdentifier sigOid = X509Utilities.GetAlgorithmOid (algorithm);
 
@@ -441,7 +437,7 @@ namespace Org.BouncyCastle.Crypto.Operators
     /// Verifier class for signature verification in ASN.1 based profiles that use an AlgorithmIdentifier to preserve
     /// signature algorithm details.
     /// </summary>
-    public class Asn1SignatureVerifier: ISignatureVerifier
+    public class Asn1VerifierFactory: IVerifierFactory
 	{
 		private readonly AlgorithmIdentifier algID;
         private readonly AsymmetricKeyParameter publicKey;
@@ -451,7 +447,7 @@ namespace Org.BouncyCastle.Crypto.Operators
         /// </summary>
         /// <param name="algorithm">The name of the signature algorithm to use.</param>
         /// <param name="publicKey">The public key to be used in the verification operation.</param>
-        public Asn1SignatureVerifier (String algorithm, AsymmetricKeyParameter publicKey)
+        public Asn1VerifierFactory (String algorithm, AsymmetricKeyParameter publicKey)
 		{
 			DerObjectIdentifier sigOid = X509Utilities.GetAlgorithmOid (algorithm);
 
@@ -459,7 +455,7 @@ namespace Org.BouncyCastle.Crypto.Operators
 			this.algID = X509Utilities.GetSigAlgID (sigOid, algorithm);
 		}
 
-		public Asn1SignatureVerifier (AlgorithmIdentifier algorithm, AsymmetricKeyParameter publicKey)
+		public Asn1VerifierFactory (AlgorithmIdentifier algorithm, AsymmetricKeyParameter publicKey)
 		{
             this.publicKey = publicKey;
 			this.algID = algorithm;
@@ -529,7 +525,7 @@ namespace Org.BouncyCastle.Crypto.Operators
     /// <summary>
     /// Provider class which supports dynamic creation of signature verifiers.
     /// </summary>
-	public class Asn1SignatureVerifierProvider: ISignatureVerifierProvider
+	public class Asn1VerifierFactoryProvider: IVerifierFactoryProvider
 	{
 		private readonly AsymmetricKeyParameter publicKey;
 
@@ -537,14 +533,14 @@ namespace Org.BouncyCastle.Crypto.Operators
         /// Base constructor - specify the public key to be used in verification.
         /// </summary>
         /// <param name="publicKey">The public key to be used in creating verifiers provided by this object.</param>
-		public Asn1SignatureVerifierProvider(AsymmetricKeyParameter publicKey)
+		public Asn1VerifierFactoryProvider(AsymmetricKeyParameter publicKey)
 		{
 			this.publicKey = publicKey;
 		}
 
-		public ISignatureVerifier CreateSignatureVerifier(Object algorithmDetails)
+		public IVerifierFactory CreateVerifierFactory(Object algorithmDetails)
 		{
-            return new Asn1SignatureVerifier ((AlgorithmIdentifier)algorithmDetails, publicKey);
+            return new Asn1VerifierFactory ((AlgorithmIdentifier)algorithmDetails, publicKey);
 		}
 
 		/// <summary>

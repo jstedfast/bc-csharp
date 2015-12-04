@@ -5,12 +5,13 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Operators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
-using Org.BouncyCastle.Crypto.Operators;
 
 namespace Org.BouncyCastle.X509
 {
@@ -134,7 +135,7 @@ namespace Org.BouncyCastle.X509
         /// Set the signature algorithm that will be used to sign this CRL.
         /// </summary>
         /// <param name="signatureAlgorithm"/>
-        [Obsolete("Not needed if Generate used with an ISignatureCalculator")]
+        [Obsolete("Not needed if Generate used with an ISignatureFactory")]
         public void SetSignatureAlgorithm(
 			string signatureAlgorithm)
 		{
@@ -203,7 +204,7 @@ namespace Org.BouncyCastle.X509
         /// </summary>
         /// <param name="privateKey">The private key of the issuer that is signing this certificate.</param>
         /// <returns>An X509Crl.</returns>
-        [Obsolete("Use Generate with an ISignatureCalculator")]
+        [Obsolete("Use Generate with an ISignatureFactory")]
         public X509Crl Generate(
             AsymmetricKeyParameter privateKey)
         {
@@ -216,34 +217,34 @@ namespace Org.BouncyCastle.X509
         /// <param name="privateKey">The private key of the issuer that is signing this certificate.</param>
         /// <param name="random">Your Secure Random instance.</param>
         /// <returns>An X509Crl.</returns>
-        [Obsolete("Use Generate with an ISignatureCalculator")]
+        [Obsolete("Use Generate with an ISignatureFactory")]
         public X509Crl Generate(
             AsymmetricKeyParameter privateKey,
             SecureRandom random)
         {
-            return Generate(new Asn1SignatureCalculator(signatureAlgorithm, privateKey, random));
+            return Generate(new Asn1SignatureFactory(signatureAlgorithm, privateKey, random));
         }
 
         /// <summary>
         /// Generate a new X509Crl using the passed in SignatureCalculator.
         /// </summary>
-        /// <param name="signatureCalculator">A signature calculator with the necessary algorithm details.</param>
+		/// <param name="signatureCalculatorFactory">A signature calculator factory with the necessary algorithm details.</param>
         /// <returns>An X509Crl.</returns>
-        public X509Crl Generate(ISignatureCalculator signatureCalculator)
+        public X509Crl Generate(ISignatureFactory signatureCalculatorFactory)
         {
-            tbsGen.SetSignature((AlgorithmIdentifier)signatureCalculator.AlgorithmDetails);
+            tbsGen.SetSignature((AlgorithmIdentifier)signatureCalculatorFactory.AlgorithmDetails);
 
             TbsCertificateList tbsCertList = GenerateCertList();
 
-            IStreamCalculator streamCalculator = signatureCalculator.CreateCalculator();
+            IStreamCalculator streamCalculator = signatureCalculatorFactory.CreateCalculator();
 
             byte[] encoded = tbsCertList.GetDerEncoded();
 
             streamCalculator.Stream.Write(encoded, 0, encoded.Length);
 
-            streamCalculator.Stream.Close();
+            Platform.Dispose(streamCalculator.Stream);
 
-            return GenerateJcaObject(tbsCertList, (AlgorithmIdentifier)signatureCalculator.AlgorithmDetails, ((IBlockResult)streamCalculator.GetResult()).Collect());
+            return GenerateJcaObject(tbsCertList, (AlgorithmIdentifier)signatureCalculatorFactory.AlgorithmDetails, ((IBlockResult)streamCalculator.GetResult()).Collect());
         }
 
         private TbsCertificateList GenerateCertList()

@@ -13,13 +13,15 @@ namespace Org.BouncyCastle.Utilities
 {
     internal abstract class Platform
     {
+        private static readonly CompareInfo InvariantCompareInfo = CultureInfo.InvariantCulture.CompareInfo;
+
 #if NETCF_1_0 || NETCF_2_0
         private static string GetNewLine()
         {
             MemoryStream buf = new MemoryStream();
             StreamWriter w = new StreamWriter(buf, Encoding.UTF8);
             w.WriteLine();
-            w.Close();
+            Dispose(w);
             byte[] bs = buf.ToArray();
             return Encoding.UTF8.GetString(bs, 0, bs.Length);
         }
@@ -30,14 +32,12 @@ namespace Org.BouncyCastle.Utilities
         }
 #endif
 
-        internal static int CompareIgnoreCase(string a, string b)
+        internal static bool EqualsIgnoreCase(string a, string b)
         {
-#if SILVERLIGHT
-            return String.Compare(a, b, StringComparison.InvariantCultureIgnoreCase);
-#elif PORTABLE
-            return String.Compare(a, b, CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
+#if PORTABLE
+            return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 #else
-            return String.Compare(a, b, true);
+            return ToUpperInvariant(a) == ToUpperInvariant(b);
 #endif
         }
 
@@ -184,5 +184,46 @@ namespace Org.BouncyCastle.Utilities
         }
 
         internal static readonly string NewLine = GetNewLine();
+
+#if PORTABLE
+        internal static void Dispose(IDisposable d)
+        {
+            d.Dispose();
+        }
+#else
+        internal static void Dispose(Stream s)
+        {
+            s.Close();
+        }
+        internal static void Dispose(TextWriter t)
+        {
+            t.Close();
+        }
+#endif
+
+        internal static int IndexOf(string source, string value)
+        {
+            return InvariantCompareInfo.IndexOf(source, value, CompareOptions.Ordinal);
+        }
+
+        internal static int LastIndexOf(string source, string value)
+        {
+            return InvariantCompareInfo.LastIndexOf(source, value, CompareOptions.Ordinal);
+        }
+
+        internal static bool StartsWith(string source, string prefix)
+        {
+            return InvariantCompareInfo.IsPrefix(source, prefix, CompareOptions.Ordinal);
+        }
+
+        internal static bool EndsWith(string source, string suffix)
+        {
+            return InvariantCompareInfo.IsSuffix(source, suffix, CompareOptions.Ordinal);
+        }
+
+        internal static string GetTypeName(object obj)
+        {
+            return obj.GetType().FullName;
+        }
     }
 }
