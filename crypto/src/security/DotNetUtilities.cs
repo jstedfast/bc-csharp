@@ -1,4 +1,4 @@
-#if !(NETCF_1_0 || SILVERLIGHT || PORTABLE)
+#if DOTNET || !(NETCF_1_0 || SILVERLIGHT || PORTABLE)
 
 using System;
 using System.Security.Cryptography;
