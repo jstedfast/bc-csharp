@@ -19,7 +19,9 @@ _Resharper*/
 packages/
 .vs/
 
+*.nuget.cache
 *.nuget.props
 *.nuget.targets
+*.nuget.dgspec.json
 *.project.lock.json
 project.lock.json
