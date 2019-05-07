@@ -12,7 +12,6 @@
     <RootNamespace>Org.BouncyCastle</RootNamespace>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
     <AssemblyName>BouncyCastle</AssemblyName>
     <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
   </PropertyGroup>
